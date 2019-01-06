@@ -13,8 +13,8 @@ class Hue {
   async login() {
     const { ipaddress } = await this.api.config();
   
-    if (ipaddress !== this.ip) throw new Error('[ERROR] Could not reach HUE');
-    else console.log('[INFO] Connected to HUE');
+    if (ipaddress !== this.ip) throw new Error('[ERROR] Could not reach HUE.');
+    else console.log('[INFO] Connected to HUE.');
   }
 
   // get the state of all devices connected to the bridge

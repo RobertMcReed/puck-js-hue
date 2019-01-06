@@ -62,19 +62,24 @@ class Puck {
     this.lastAdvertising[peripheral.address] = currentAdvertising;
   }
 
-  init() {
-    noble.on('stateChange',  (state) => {
-      if (state != "poweredOn") return;
+  handleStateChange(bluetoothState) {
+    if (bluetoothState != "poweredOn") {
+      console.log('Bluetooth state:', bluetoothState);
+      console.log('[ERROR] Bluetooth is not enabled. Please enable bluetooth before continuing.');
+      process.exit();
+    }
 
-      noble.startScanning([], true);
-      console.log('[INFO] Initializing scanner.')
-    });
+    noble.startScanning([], true);
+  }
+
+  init() {
+    noble.on('stateChange', this.handleStateChange);
 
     noble.on('discover', this.pucks.length ? this.handlePuckAdvertising : this.discoverPucks);
 
-    noble.on('scanStart', function() { console.log("[INFO] Listening for Puck.js clicks"); });
+    noble.on('scanStart', () => console.log("[INFO] Listening for Puck.js clicks."));
 
-    noble.on('scanStop', function() { console.log("[INFO] Scanning stopped.");});
+    noble.on('scanStop', () => console.log("[INFO] Scanning stopped."));
   }
 }
 
