@@ -8,13 +8,13 @@ const main = async () => {
   const printStatus = true;
   const puck = new Puck(hue.handlePuckClick(printStatus));
   puck.init();
-}
+};
 
 const discovery = () => {
   console.log('[INFO] Searching for Pucks.');
   const puck = new Puck();
   puck.init();
-}
+};
 
 // If Puck address is known, run the main program. Otherwise, discover nearby Pucks.
 process.env.PUCKS ? main() : discovery();

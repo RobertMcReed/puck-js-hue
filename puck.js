@@ -67,6 +67,7 @@ class Puck {
       if (state != "poweredOn") return;
 
       noble.startScanning([], true);
+      console.log('[INFO] Initializing scanner.')
     });
 
     noble.on('discover', this.pucks.length ? this.handlePuckAdvertising : this.discoverPucks);
