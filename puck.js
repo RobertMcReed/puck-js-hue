@@ -63,9 +63,13 @@ class Puck {
   }
 
   handleStateChange(bluetoothState) {
-    if (bluetoothState != "poweredOn") {
-      console.log('Bluetooth state:', bluetoothState);
-      console.log('[ERROR] Bluetooth is not enabled. Please enable bluetooth before continuing.');
+    if (bluetoothState !== 'poweredOn') {
+      console.log('[ERROR] bluetooth state:', bluetoothState);
+
+      if (bluetoothState === 'poweredOff') {
+        console.log('[ERROR] Bluetooth is not enabled. Please enable bluetooth before continuing.');
+      }
+      
       process.exit();
     }
 
