@@ -1,13 +1,15 @@
-require('dotenv').load()
+require('dotenv').load();
 
-const { init: initHueProm } = require('./hue')
-const Puck = require('./puck')
+const { init: initHueProm } = require('./hue');
+const Puck = require('./puck');
 
-const main = async (lightGroup = 1) => {
-  const hue = await initHueProm()
-  const puck = new Puck(hue.toggleGroupBound(lightGroup, true))
-  puck.init()
+const main = async () => {
+  const hue = await initHueProm();
+  const printStatus = true;
+  const puck = new Puck(hue.handlePuckClick(printStatus));
+  puck.init();
 }
 
-if (process.env.PUCKS) main(2)
-else (new Puck()).init()
+// If Puck address is known, run the main program. Otherwise, discover nearby Pucks.
+if (process.env.PUCKS) main();
+else (new Puck()).init();
