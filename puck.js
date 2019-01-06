@@ -53,8 +53,8 @@ class Puck {
     // get the previously advertised message by this Puck
     const lastAdvertising = this.lastAdvertising[peripheral.address];
 
-    // if the advertisement has changed, pass the data to the handler
-    if (lastAdvertising && lastAdvertising !== currentAdvertising) {
+    // if it is the first advertisement or the advertisement has changed, pass the data to the handler
+    if (!lastAdvertising || lastAdvertising !== currentAdvertising) {
       this.handleClick(lastAdvertising, currentAdvertising);
     }
   

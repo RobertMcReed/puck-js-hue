@@ -86,7 +86,7 @@ class Hue {
     if(on) this.turnOffGroup(groupNum);
     else this.turnOnGroup(groupNum);
 
-    if(alert) console.log(`[INFO] ${name} turned ${on ? 'off' : 'on'}`);
+    if(alert) console.log(`[INFO] ${name} turned ${on ? 'off' : 'on'}.`);
   }
 
   // Change rooms if keys are different, otherwise toggle lights
@@ -97,9 +97,14 @@ class Hue {
   
       if (lastKey === currKey) { // If the keys are the same, we are toggling the lights
         this.toggleGroup(currKey, alert);
-      } else { // otherwise we are changing rooms
+      } else { // either first advert or a room switch
         const { on, name } = await this.getGroupStatus(currKey);
-        console.log(`[INFO] Puck switching to ${name}. Lights are currently ${on ? 'on' : 'off'}.`);
+        const lightStatus = `Lights are currently ${on ? 'on' : 'off'}.`;
+        const firstMessage = `found. Currently set`;
+        const switchMessage = `switching`;
+
+        console.log(`[INFO] Puck ${lastKey ? switchMessage : firstMessage} to ${name}.`);
+        console.log(`[INFO] ${lightStatus}`);
       }
     }
   }
@@ -124,7 +129,7 @@ function createState() {
 }
 
 // identify which room an advertising is for
-function getRoomKey(advertising) {
+function getRoomKey(advertising='') {
   return advertising.split('-')[0];
 }
 
