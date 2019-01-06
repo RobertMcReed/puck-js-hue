@@ -10,6 +10,11 @@ const main = async () => {
   puck.init();
 }
 
+const discovery = () => {
+  console.log('[INFO] Searching for Pucks.');
+  const puck = new Puck();
+  puck.init();
+}
+
 // If Puck address is known, run the main program. Otherwise, discover nearby Pucks.
-if (process.env.PUCKS) main();
-else (new Puck()).init();
+process.env.PUCKS ? main() : discovery();
