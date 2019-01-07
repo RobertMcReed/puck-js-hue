@@ -17,4 +17,4 @@ const discovery = () => {
 };
 
 // If Puck address is known, run the main program. Otherwise, discover nearby Pucks.
-process.env.PUCKS ? main() : discovery();
+process.env.PUCKS ? main().catch(console.log) : discovery();

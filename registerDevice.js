@@ -1,3 +1,5 @@
+require('dotenv').load();
+const fs = require('fs');
 const { registerDevice } = require('./hue');
 
 const catchError = ({ message }) => {
@@ -7,6 +9,37 @@ const catchError = ({ message }) => {
     console.log('\nPress the link button on your bridge and try again.');
   }
 };
+
+const addUsernameToEnv = (username) => {
+  const envPath = `${__dirname}/.env`;
+  const usernameLine = `USERNAME=${username}`;
+  let updatedEnv = `${usernameLine}`;
+  let noUsername = true;
+
+  try {
+    const envBuffer = fs.readFileSync(envPath);
+    const lines = envBuffer.toString().split('\n');
+    let newLines = lines.map(line => {
+      if (line.slice(0, 9) === 'USERNAME=') {
+        noUsername = false;
+
+        return usernameLine;
+      }
+      return line;
+    });
+
+    if (noUsername) newLines = [updatedEnv, ...newLines];
+    if (newLines.length === 1) newLines.push('');
+
+    updatedEnv = newLines.join('\n');
+    console.log('[INFO] Updating .env with new USERNAME.');
+  } catch (e) {
+    console.log('[INFO] No .env found. Adding USERNAME to new .env.');
+    updatedEnv += '\n';
+  }
+  
+  fs.writeFileSync(envPath, updatedEnv);
+}
 
 const getDeviceName = () => {
   let deviceName = '';
@@ -25,10 +58,17 @@ const getDeviceName = () => {
 };
 
 const main = async () => {
-  const deviceName = getDeviceName() || `Phillips Hue node.js project ${String(Math.random()).slice(2, 5)}`;
+  const deviceName = (
+    getDeviceName() || 
+    `Phillips Hue node.js project ${String(Math.random()).slice(2, 5)}`
+  );
   
-  console.log(`[INFO] Device Name: ${deviceName}`);
-  registerDevice(deviceName).catch(catchError);
+  const username = await registerDevice(deviceName).catch(catchError);
+  
+  if (username) {
+    console.log(`[INFO] Device Name: ${deviceName}`);
+    addUsernameToEnv(username);
+  }
 };
 
 main();
