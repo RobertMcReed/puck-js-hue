@@ -7,7 +7,7 @@ const catchError = ({ message }) => {
   log.err(message);
 
   if (message.includes('link button not pressed')) {
-    console.log();
+    log.br();
     log.env('Press the link button on your bridge and try again.');
   }
 };
