@@ -1,12 +1,14 @@
 require('dotenv').load();
+const log = require('./lib/log');
 const updateEnv = require('./lib/updateEnv');
 const { registerDevice: registerDeviceWithHue } = require('./lib/hue');
 
 const catchError = ({ message }) => {
-  console.log('[ERROR]', message);
+  log.err(message);
 
   if (message.includes('link button not pressed')) {
-    console.log('\nPress the link button on your bridge and try again.');
+    console.log();
+    log.env('Press the link button on your bridge and try again.');
   }
 };
 
@@ -35,7 +37,7 @@ const registerDevice = async () => {
   const username = await registerDeviceWithHue(deviceName).catch(catchError);
   
   if (username) {
-    console.log(`[INFO] Device Name: ${deviceName}`);
+    log.info(`Device Name: ${deviceName}`);
     updateEnv({ key: 'USERNAME', value: username, overwrite: false });
   }
 };

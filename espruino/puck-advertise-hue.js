@@ -54,7 +54,7 @@ const handleWatch = (e) => {
   if (len > 0.7) { //longest press, identify room
     const roomNum = state.room;
     flashRoomNum(roomNum, RED);
-    console.log(`Currently set to ${rooms[state.room].name}`);
+    console.log(`[INFO] Currently set to ${rooms[state.room].name}`);
   } else if (len > 0.3) { // long press, switch rooms
     const roomData = getNextRoom();
     const roomNum = roomData.roomNum;
@@ -62,18 +62,18 @@ const handleWatch = (e) => {
 
     flashRoomNum(roomNum, BLUE);
     setAdvertisement();
-    console.log(`Switching to ${rooms[state.room].name}`);
+    console.log(`[INFO] Switching to ${rooms[state.room].name}`);
   } else { // short press, toggle light
     digitalPulse(GREEN, 1, 250);
     toggleLights();
     setAdvertisement();
-    console.log(`Toggling ${rooms[state.room].name}`);
-    console.log(`Toggle: ${state.toggle}`);
+    console.log(`[INFO] Toggling ${rooms[state.room].name}`);
+    console.log(`[INFO] Toggle: ${state.toggle}`);
   }
 };
 
 const init = () => {
-  console.log(`__SET_ADVERT__`);
+  console.log(`[INFO] __SET_ADVERT__`);
   setAdvertisement();
   setWatch(handleWatch, BTN, { edge: 'falling', repeat: true, debounce: 50 });
 };
