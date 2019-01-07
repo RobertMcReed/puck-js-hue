@@ -1,7 +1,7 @@
 const noble = require('noble');
 
 class Puck {
-  constructor(handleClick) {
+  constructor({ handleClick, handleDiscovery }) {
     // List of allowed devices
     const { PUCKS } = process.env;
     this.pucks = (PUCKS ? PUCKS.split(',') : []);
@@ -9,8 +9,15 @@ class Puck {
     // last advertising data received for each Puck
     this.lastAdvertising = {};
     this.handleClick = handleClick;
+    this.handleDiscovery = handleDiscovery;
     this.discoverPucks = this.discoverPucks.bind(this);
     this.handlePuckAdvertising = this.handlePuckAdvertising.bind(this);
+
+    this.onDiscover = (
+      (this.handleDiscovery || !this.pucks.length)
+        ? this.discoverPucks
+        : this.handlePuckAdvertising
+    );
   }
 
   discoverPucks(peripheral) {
@@ -25,17 +32,23 @@ class Puck {
     if (!peripheral.advertisement.manufacturerData) return;
 
     // only listen for Pucks
-    const { localName } = peripheral.advertisement;
+    const { address, advertisement = {} } = peripheral;
+    const { localName, manufacturerData: data } = advertisement;
     if (!(localName && localName.includes('Puck.js'))) return;
 
+    const known = this.pucks.includes(address);
+
     // display info from found puck
-    console.log('MAC Address:',
-      peripheral.address,
-      'Device Name:',
-      localName,
-      'Data:',
-      peripheral.advertisement.manufacturerData.slice(2).toString(),
-    );
+    console.log(`\nFound ${known ? 'KNOWN' : 'NEW'} Puck`);
+    console.log('Name:', localName);
+    console.log('Address:', address);
+    console.log('Advertisement:', data.slice(2).toString());
+
+    if (!known) {
+      this.pucks.push(address);
+
+      if (this.handleDiscovery) this.handleDiscovery(this.pucks.join(','));
+    }
   }
 
   handlePuckAdvertising(peripheral) {
@@ -62,7 +75,7 @@ class Puck {
     this.lastAdvertising[peripheral.address] = currentAdvertising;
   }
 
-  handleStateChange(bluetoothState) {
+  onStateChange(bluetoothState) {
     if (bluetoothState !== 'poweredOn') {
       console.log('[ERROR] bluetooth state:', bluetoothState);
 
@@ -77,11 +90,11 @@ class Puck {
   }
 
   init() {
-    noble.on('stateChange', this.handleStateChange);
+    noble.on('stateChange', this.onStateChange);
 
-    noble.on('discover', this.pucks.length ? this.handlePuckAdvertising : this.discoverPucks);
+    noble.on('discover', this.onDiscover);
 
-    noble.on('scanStart', () => console.log("[INFO] Listening for Puck.js clicks."));
+    noble.on('scanStart', () => console.log("[INFO] Listening for Puck.js advertisements."));
 
     noble.on('scanStop', () => console.log("[INFO] Scanning stopped."));
   }
