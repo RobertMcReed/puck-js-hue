@@ -1,7 +1,7 @@
 require('dotenv').load();
 
-const { init: initHueProm } = require('./hue');
-const Puck = require('./puck');
+const { init: initHueProm } = require('./lib/hue');
+const Puck = require('./lib/puck');
 
 const main = async () => {
   const hue = await initHueProm();

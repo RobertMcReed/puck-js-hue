@@ -1,6 +1,6 @@
 require('dotenv').load();
-const updateEnv = require('./updateEnv');
-const { registerDevice: registerDeviceWithHue } = require('./hue');
+const updateEnv = require('./lib/updateEnv');
+const { registerDevice: registerDeviceWithHue } = require('./lib/hue');
 
 const catchError = ({ message }) => {
   console.log('[ERROR]', message);

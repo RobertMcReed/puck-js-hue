@@ -1,6 +1,6 @@
 require('dotenv').load();
-const Puck = require('./puck');
-const updateEnv = require('./updateEnv');
+const Puck = require('./lib/puck');
+const updateEnv = require('./lib/updateEnv');
 
 const handleNewPuck = (pucks) => {
   updateEnv({ key: 'PUCKS', value: pucks, overwrite: true });
