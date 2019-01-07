@@ -38,7 +38,7 @@ const registerDevice = async () => {
   
   if (username) {
     log.info(`Device Name: ${deviceName}`);
-    updateEnv({ key: 'USERNAME', value: username, overwrite: false });
+    updateEnv({ key: 'HUE_USERNAME', value: username, overwrite: false });
   }
 };
 

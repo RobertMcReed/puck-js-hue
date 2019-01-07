@@ -10,7 +10,7 @@ const main = async () => {
   puck.init();
 };
 
-const { PUCKS, USERNAME } = process.env;
+const { PUCKS, HUE_USERNAME } = process.env;
 let run = true;
 
 if (!PUCKS) {
@@ -19,8 +19,8 @@ if (!PUCKS) {
   run = false;
 }
 
-if (!USERNAME) {
-  log.err('You must have a Hue USERNAME in a .env file at the root of the project.\n');
+if (!HUE_USERNAME) {
+  log.err('You must have a Hue HUE_USERNAME in a .env file at the root of the project.\n');
   log.info('Press the link button on your Hue Bridge and then run "node registerDevice.js" to automatically register your device and add it to your .env.\n');
   run = false;
 }
