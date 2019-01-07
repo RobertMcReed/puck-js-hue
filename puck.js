@@ -1,7 +1,7 @@
-const noble = require('noble');
-
 class Puck {
   constructor({ handleClick, handleNewPuck }) {
+    this.noble = require('noble');
+
     // List of allowed devices
     const { PUCKS } = process.env;
     this.pucks = (PUCKS ? PUCKS.split(',') : []);
@@ -10,6 +10,7 @@ class Puck {
     this.lastAdvertising = {};
     this.handleClick = handleClick;
     this.handleNewPuck = handleNewPuck;
+    this.onStateChange = this.onStateChange.bind(this);
     this.discoverPucks = this.discoverPucks.bind(this);
     this.handlePuckAdvertising = this.handlePuckAdvertising.bind(this);
 
@@ -86,17 +87,17 @@ class Puck {
       process.exit();
     }
 
-    noble.startScanning([], true);
+    this.noble.startScanning([], true);
   }
 
   init() {
-    noble.on('stateChange', this.onStateChange);
+    this.noble.on('stateChange', this.onStateChange);
 
-    noble.on('discover', this.onDiscover);
+    this.noble.on('discover', this.onDiscover);
 
-    noble.on('scanStart', () => console.log("[INFO] Listening for Puck.js advertisements."));
+    this.noble.on('scanStart', () => console.log("[INFO] Listening for Puck.js advertisements."));
 
-    noble.on('scanStop', () => console.log("[INFO] Scanning stopped."));
+    this.noble.on('scanStop', () => console.log("[INFO] Scanning stopped."));
   }
 }
 
