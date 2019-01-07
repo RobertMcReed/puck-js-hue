@@ -14,7 +14,7 @@ class Hue {
     const username = await this.api.registerUser(this.ip, deviceDescription);
     console.log('[INFO] Device registered successfully.');
     console.log('[INFO] Username:', username);
-    console.log(`\nAdd USERNAME=${username} to your .env file to use the HUE API.`);
+    console.log(`\nAdd USERNAME=${username} to your .env file to use the HUE API.`);f
   }
   
   // ensure that we can connect to HUE
