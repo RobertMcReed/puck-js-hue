@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const updateEnv = ({ key, value, overwrite = true }) => {
+const updateEnv = ({ key, value, overwrite }) => {
   const envPath = `${__dirname}/.env`;
   const newLine = `${key}=${value}`;
   let updatedEnv = `${newLine}`;
