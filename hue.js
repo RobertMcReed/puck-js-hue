@@ -8,13 +8,24 @@ class Hue {
     this.ip = ip;
     this.api = new HueApi(ip, USERNAME);
   }
+
+  // press bridge link button before running this method
+  async registerDevice(deviceDescription) {
+    const username = await this.api.registerUser(this.ip, deviceDescription);
+    console.log('[INFO] Device registered successfully.');
+    console.log('[INFO] Username:', username);
+    console.log(`\nAdd USERNAME=${username} to your .env file to use the HUE API.`);
+  }
   
   // ensure that we can connect to HUE
   async login() {
-    const { ipaddress } = await this.api.config();
+    const { ipaddress: ip } = await this.api.config();
   
-    if (ipaddress !== this.ip) throw new Error('[ERROR] Could not reach HUE.');
-    else console.log('[INFO] Connected to HUE.');
+    if (ip !== this.ip) {
+      console.log('[ERROR] Could not reach HUE.')
+      console.log('Ensure that you have registered this device with HUE bridge and have your USERNAME set as an environment variable.');
+      process.exit();
+    } else console.log('[INFO] Connected to HUE.');
   }
 
   // get the state of all devices connected to the bridge
@@ -133,13 +144,25 @@ function getRoomKey(advertising='') {
   return advertising.split('-')[0];
 }
 
-// instantiate a complete hue instance
-const init = async () => {
+// get the ip of the bridge and instantiate a Hue
+const getHue = async () => {
   const ip = await getBridgeIp();
   const hue = new Hue(ip);
+
+  return hue;
+};
+
+// instantiate a complete hue instance
+const init = async () => {
+  const hue = getHue();
   await hue.login();
 
   return hue;
 };
 
-module.exports = { init };
+const registerDevice = async (deviceDescription) => {
+  const hue = await getHue();
+  await hue.registerDevice(deviceDescription);
+};
+
+module.exports = { init, registerDevice };
