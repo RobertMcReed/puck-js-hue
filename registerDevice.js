@@ -1,6 +1,6 @@
 require('dotenv').load();
 const updateEnv = require('./updateEnv');
-const { registerDevice } = require('./hue');
+const { registerDevice: registerDeviceWithHue } = require('./hue');
 
 const catchError = ({ message }) => {
   console.log('[ERROR]', message);
@@ -26,13 +26,13 @@ const getDeviceName = () => {
   return deviceName;
 };
 
-const main = async () => {
+const registerDevice = async () => {
   const deviceName = (
     getDeviceName() || 
     `Phillips Hue node.js project ${String(Math.random()).slice(2, 5)}`
   );
   
-  const username = await registerDevice(deviceName).catch(catchError);
+  const username = await registerDeviceWithHue(deviceName).catch(catchError);
   
   if (username) {
     console.log(`[INFO] Device Name: ${deviceName}`);
@@ -40,4 +40,4 @@ const main = async () => {
   }
 };
 
-main();
+registerDevice();
