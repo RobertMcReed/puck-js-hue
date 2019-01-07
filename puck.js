@@ -1,7 +1,7 @@
 const noble = require('noble');
 
 class Puck {
-  constructor({ handleClick, handleDiscovery }) {
+  constructor({ handleClick, handleNewPuck }) {
     // List of allowed devices
     const { PUCKS } = process.env;
     this.pucks = (PUCKS ? PUCKS.split(',') : []);
@@ -9,12 +9,12 @@ class Puck {
     // last advertising data received for each Puck
     this.lastAdvertising = {};
     this.handleClick = handleClick;
-    this.handleDiscovery = handleDiscovery;
+    this.handleNewPuck = handleNewPuck;
     this.discoverPucks = this.discoverPucks.bind(this);
     this.handlePuckAdvertising = this.handlePuckAdvertising.bind(this);
 
     this.onDiscover = (
-      (this.handleDiscovery || !this.pucks.length)
+      (this.handleNewPuck || !this.pucks.length)
         ? this.discoverPucks
         : this.handlePuckAdvertising
     );
@@ -47,7 +47,7 @@ class Puck {
     if (!known) {
       this.pucks.push(address);
 
-      if (this.handleDiscovery) this.handleDiscovery(this.pucks.join(','));
+      if (this.handleNewPuck) this.handleNewPuck(this.pucks.join(','));
     }
   }
 
