@@ -2,7 +2,7 @@ const RED = LED1;
 const GREEN = LED2;
 const BLUE = LED3;
 
-const rooms = [
+const GROUPS = [
   { name: 'Bedroom', key: 1 },
   { name: 'Living Room', key: 2 },
   { name: 'Porch', key: 5 },
@@ -11,25 +11,25 @@ const rooms = [
 ];
 
 const state = {
-  room: 0,
+  group: 0,
   toggle: 0,
 };
 
-const getNextRoom = () => {
-  if (++state.room === rooms.length) state.room = 0;
+const getNextGroup = () => {
+  if (++state.group === GROUPS.length) state.group = 0;
   
-  return { roomNum: state.room, key: rooms[state.room].key };
+  return { groupNum: state.group, key: GROUPS[state.group].key };
 };
 
-const toggleLights = () => {
+const toggleLightGroup = () => {
   if (++state.toggle > 9) state.toggle = 0;
 };
 
-const flashRoomNum = (roomNum, color) => {
+const flashGroupNum = (groupNum, color) => {
   let nums = 0;
 
   const flasherHelper = () => {
-    if (nums > roomNum) return;
+    if (nums > groupNum) return;
     else {
       nums++;
       digitalPulse(color, 1, 150);
@@ -41,7 +41,9 @@ const flashRoomNum = (roomNum, color) => {
 };
 
 const setAdvertisement = () => {
-  const advert = `${rooms[state.room].key}-${state.toggle}`;
+  const key = GROUPS[state.group].key;
+  const toggle = state.toggle;
+  const advert = `${key}-${toggle}`;
   NRF.setAdvertising(
     {},
     { manufacturer: 0x0590, manufacturerData:[advert]}
@@ -51,25 +53,23 @@ const setAdvertisement = () => {
 const handleWatch = (e) => {
   let len = e.time - e.lastTime;
 
-  if (len > 0.7) { //longest press, identify room
-    const roomNum = state.room;
-    flashRoomNum(roomNum, RED);
-    console.log(`[INFO] Currently set to ${rooms[state.room].name}`);
-  } else if (len > 0.3) { // long press, switch rooms
-    const roomData = getNextRoom();
-    const roomNum = roomData.roomNum;
-    const key = roomData.key;
+  if (len > 0.7) { //longest press, identify group
+    const groupNum = state.group;
+    flashGroupNum(groupNum, RED);
+    console.log(`[INFO] Currently set to ${GROUPS[state.group].name}`);
+  } else if (len > 0.3) { // long press, switch groups
+    const groupData = getNextGroup();
+    const groupNum = groupData.groupNum;
 
-    flashRoomNum(roomNum, BLUE);
-    setAdvertisement();
-    console.log(`[INFO] Switching to ${rooms[state.room].name}`);
+    flashGroupNum(groupNum, BLUE);
+    console.log(`[INFO] Switching to ${GROUPS[state.group].name}`);
   } else { // short press, toggle light
     digitalPulse(GREEN, 1, 250);
-    toggleLights();
-    setAdvertisement();
-    console.log(`[INFO] Toggling ${rooms[state.room].name}`);
+    toggleLightGroup();
+    console.log(`[INFO] Toggling ${GROUPS[state.group].name}`);
     console.log(`[INFO] Toggle: ${state.toggle}`);
   }
+  setAdvertisement();
 };
 
 const init = () => {
