@@ -1,3 +1,5 @@
+'use strict';
+
 require('dotenv').load();
 const Puck = require('./lib/puck');
 const updateEnv = require('./lib/updateEnv');

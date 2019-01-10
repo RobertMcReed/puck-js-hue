@@ -2,6 +2,7 @@ const RED = LED1;
 const GREEN = LED2;
 const BLUE = LED3;
 
+// START
 const GROUPS = [
   { name: 'Bedroom', key: 1 },
   { name: 'Living Room', key: 2 },
@@ -9,6 +10,7 @@ const GROUPS = [
   { name: 'Basement', key: 4 },
   { name: 'TV Room', key: 3 },
 ];
+// END
 
 const state = {
   group: 0,
