@@ -1,7 +1,5 @@
-'use strict';
-
 require('dotenv').load();
-const log = require('./lib/log');
+const { log } = require('./lib/util');
 const updateEnv = require('./lib/updateEnv');
 const { registerDevice: registerDeviceWithHue } = require('./lib/hue');
 
@@ -23,6 +21,8 @@ const getDeviceName = () => {
 
       return true;
     }
+
+    return false;
   };
 
   Array.from(process.argv).some(checkArgs);
@@ -32,13 +32,13 @@ const getDeviceName = () => {
 
 const registerDevice = async (description) => {
   const deviceName = (
-    description ||
-    getDeviceName() || 
-    `Phillips Hue node.js project ${String(Math.random()).slice(2, 5)}`
+    description
+    || getDeviceName()
+    || `Phillips Hue node.js project ${String(Math.random()).slice(2, 5)}`
   );
-  
+
   const username = await registerDeviceWithHue(deviceName).catch(catchError);
-  
+
   if (username) {
     log.info(`Device Name: ${deviceName}`);
     updateEnv({ key: 'HUE_USERNAME', value: username, overwrite: false });

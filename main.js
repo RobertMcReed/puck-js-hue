@@ -1,15 +1,13 @@
-'use strict';
-
 require('dotenv').load();
-const log = require('./lib/log');
 const Puck = require('./lib/puck');
+const { log } = require('./lib/util');
 const { initHueProm } = require('./lib/hue');
 
 const init = async () => {
   const hue = await initHueProm();
   const printStatus = true;
 
-  new Puck({ handleClick: hue.handlePuckClick(printStatus) });
+  return new Puck({ handleClick: hue.handlePuckClick(printStatus) });
 };
 
 const main = () => {
