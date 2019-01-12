@@ -8,9 +8,6 @@ const handleNewPuck = (pucks) => {
   updateEnv({ key: 'PUCKS', value: pucks, overwrite: true });
 }
 
-const discoverPucks = () => {
-  const puck = new Puck({ handleNewPuck });
-  puck.init();
-};
+const discoverPucks = () => (new Puck({ handleNewPuck }));
 
-discoverPucks();
+if (!module.parent) discoverPucks();

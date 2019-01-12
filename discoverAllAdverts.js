@@ -1,7 +1,5 @@
 'use strict';
 
-const noble = require('noble');
-
 const onDiscovery = (peripheral) => {
   // peripheral.rssi                             - signal strength
   // peripheral.address                          - MAC address
@@ -16,13 +14,19 @@ const onDiscovery = (peripheral) => {
     JSON.stringify(peripheral.advertisement.localName),
     JSON.stringify(peripheral.advertisement.manufacturerData)
   );
-}
+};
 
-noble.on('stateChange',  function(state) {
-  if (state!="poweredOn") return;
-  console.log("Starting scan...");
-  noble.startScanning([], true);
-});
-noble.on('discover', onDiscovery);
-noble.on('scanStart', function() { console.log("Scanning started."); });
-noble.on('scanStop', function() { console.log("Scanning stopped.");});
+const discoverAllPucks = () => {
+  const noble = require('noble');
+
+  noble.on('stateChange',  function(state) {
+    if (state!="poweredOn") return;
+    console.log("Starting scan...");
+    noble.startScanning([], true);
+  });
+  noble.on('discover', onDiscovery);
+  noble.on('scanStart', function() { console.log("Scanning started."); });
+  noble.on('scanStop', function() { console.log("Scanning stopped.");});
+};
+
+if (!module.parent) discoverAllPucks();

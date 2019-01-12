@@ -30,8 +30,9 @@ const getDeviceName = () => {
   return deviceName;
 };
 
-const registerDevice = async () => {
+const registerDevice = async (description) => {
   const deviceName = (
+    description ||
     getDeviceName() || 
     `Phillips Hue node.js project ${String(Math.random()).slice(2, 5)}`
   );
@@ -42,6 +43,9 @@ const registerDevice = async () => {
     log.info(`Device Name: ${deviceName}`);
     updateEnv({ key: 'HUE_USERNAME', value: username, overwrite: false });
   }
+
+  return username;
 };
 
-registerDevice();
+if (!module.parent) registerDevice();
+else module.exports = registerDevice;
