@@ -8,6 +8,7 @@ const GROUPS = [
 const RED = LED1; // eslint-disable-line
 const GREEN = LED2; // eslint-disable-line
 const BLUE = LED3; // eslint-disable-line
+const GROUP_DELAY = 10;
 
 const state = {
   group: 0,
@@ -77,7 +78,7 @@ const handleChangeGroups = (e) => {
   let groupNum = state.group;
   let prefix = 'Group set';
 
-  if (state.lastGroupTime && (e.time - state.lastGroupTime) < 5) {
+  if (state.lastGroupTime && (e.time - state.lastGroupTime) < GROUP_DELAY) {
     const groupData = getNextGroup();
     groupNum = groupData.groupNum; // eslint-disable-line
     prefix = 'Switching';
