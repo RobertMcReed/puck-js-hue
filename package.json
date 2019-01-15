@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "clipboardy": "^1.2.3",
     "dotenv": "^6.2.0",
     "fs-extra": "^7.0.1",
     "noble": "^1.9.1",

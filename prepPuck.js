@@ -1,6 +1,7 @@
 require('dotenv').load();
 const fs = require('fs-extra');
 const { join } = require('path');
+const clipboard = require('clipboardy');
 const { log, concat } = require('./lib/util');
 const { initHueProm } = require('./lib/hue');
 
@@ -38,7 +39,10 @@ const prepPuck = async () => {
   log.info('Adding GROUPS array to espruino/puck-advertise-hue.js...');
 
   await fs.writeFile(filename, formattedCode);
-  log.info('Success.');
+  log.info('Copying Espruino code to your clipboard...');
+  const cleanedCode = formattedCode.replace(/ \/\/ eslint.*$/gm, '');
+  await clipboard.write(cleanedCode);
+  log.info('Success. Paste the code into the Espruino Web IDE and flash it to your Puck.js.');
 };
 
 if (!module.parent) prepPuck();
