@@ -1,9 +1,7 @@
 const GROUPS = [
   { name: 'Bedroom', key: 1 },
   { name: 'Living Room', key: 2 },
-  { name: 'Porch', key: 5 },
-  { name: 'Basement', key: 4 },
-  { name: 'TV Room', key: 3 },
+  { name: 'Kitchen', key: 6 },
 ];
 // DO NOT ADD ANYTHING ABOVE THIS LINE
 
@@ -14,6 +12,8 @@ const BLUE = LED3; // eslint-disable-line
 const state = {
   group: 0,
   toggle: 0,
+  brightness: 0,
+  lastGroupTime: null,
 };
 
 function info() {
@@ -27,18 +27,28 @@ const getNextGroup = () => {
   return { groupNum: state.group, key: GROUPS[state.group].key };
 };
 
-const toggleLightGroup = () => {
-  if (++state.toggle > 9) state.toggle = 0;
+const toggleLights = () => {
+  if (++state.toggle > 1) state.toggle = 0;
 };
 
-const flashGroupNum = (groupNum, color) => {
+const toggleBrightness = () => {
+  if (++state.brightness > 1) state.brightness = 0;
+};
+
+const pulseMany = (colors, duration) => {
+  const time = duration || 250;
+  const pins = Array.isArray(colors) ? colors : [colors];
+  pins.forEach(pin => digitalPulse(pin, 1, time)); // eslint-disable-line
+};
+
+const flashGroupNum = (groupNum, colors) => {
   let nums = 0;
 
   const flasherHelper = () => {
     if (nums <= groupNum) {
       nums++;
-      digitalPulse(color, 1, 150); // eslint-disable-line
-      setTimeout(flasherHelper, 300);
+      pulseMany(colors);
+      setTimeout(flasherHelper, 500);
     }
   };
 
@@ -48,32 +58,49 @@ const flashGroupNum = (groupNum, color) => {
 const setAdvertisement = () => {
   const key = GROUPS[state.group].key; // eslint-disable-line
   const toggle = state.toggle; // eslint-disable-line
-  const advert = `${key}-${toggle}`;
+  const brightness = state.brightness; // eslint-disable-line
+  const advert = `${key}-${toggle}-${brightness}`;
+  info('Setting Advertisement:', advert);
   NRF.setAdvertising( // eslint-disable-line
     {},
-    { manufacturer: 0x0590, manufacturerData: [advert] },
+    { manufacturer: 0x0590, manufacturerData: [advert] } // eslint-disable-line
   );
+};
+
+const handleChangeBrightness = () => {
+  pulseMany([RED, GREEN], 400);
+  info(`Adjusting brightness in ${GROUPS[state.group].name}`);
+  toggleBrightness();
+};
+
+const handleChangeGroups = (e) => {
+  let groupNum = state.group;
+  let prefix = 'Group set';
+
+  if (state.lastGroupTime && (e.time - state.lastGroupTime) < 5) {
+    const groupData = getNextGroup();
+    groupNum = groupData.groupNum; // eslint-disable-line
+    prefix = 'Switching';
+  }
+
+  info(`${prefix} to ${GROUPS[state.group].name}`);
+  state.lastGroupTime = e.time;
+  flashGroupNum(groupNum, [BLUE, RED]);
+};
+
+const handleToggleLights = () => {
+  pulseMany([BLUE, GREEN], 400); // eslint-disable-line
+  info(`Toggling ${GROUPS[state.group].name}`);
+  toggleLights();
 };
 
 const handleWatch = (e) => {
   const len = e.time - e.lastTime;
 
-  if (len > 0.7) { // longest press, identify group
-    const groupNum = state.group;
-    flashGroupNum(groupNum, RED);
-    info(`Currently set to ${GROUPS[state.group].name}`);
-  } else if (len > 0.3) { // long press, switch groups
-    const groupData = getNextGroup();
-    const groupNum = groupData.groupNum; // eslint-disable-line
+  if (len > 0.6) handleChangeGroups(e);
+  else if (len > 0.3) handleChangeBrightness();
+  else handleToggleLights();
 
-    flashGroupNum(groupNum, BLUE);
-    info(`Switching to ${GROUPS[state.group].name}`);
-  } else { // short press, toggle light
-    digitalPulse(GREEN, 1, 250); // eslint-disable-line
-    toggleLightGroup();
-    info(`Toggling ${GROUPS[state.group].name}`);
-    info(`Toggle: ${state.toggle}`);
-  }
   setAdvertisement();
 };
 
