@@ -69,7 +69,7 @@ const setAdvertisement = () => {
 };
 
 const handleChangeBrightness = () => {
-  pulseMany([RED, GREEN], 400);
+  pulseMany([BLUE, GREEN], 400);
   info(`Adjusting brightness in ${GROUPS[state.group].name}`);
   toggleBrightness();
 };
@@ -86,11 +86,11 @@ const handleChangeGroups = (e) => {
 
   info(`${prefix} to ${GROUPS[state.group].name}`);
   state.lastGroupTime = e.time;
-  flashGroupNum(groupNum, [BLUE, RED]);
+  flashGroupNum(groupNum, [BLUE, RED, GREEN]);
 };
 
 const handleToggleLights = () => {
-  pulseMany([BLUE, GREEN], 400); // eslint-disable-line
+  pulseMany([BLUE, RED], 400); // eslint-disable-line
   info(`Toggling ${GROUPS[state.group].name}`);
   toggleLights();
 };
