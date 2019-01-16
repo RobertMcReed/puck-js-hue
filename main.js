@@ -3,14 +3,7 @@ const Puck = require('./lib/puck');
 const { log } = require('./lib/util');
 const { initHueProm } = require('./lib/hue');
 
-const init = async () => {
-  const hue = await initHueProm();
-  const printStatus = true;
-
-  return new Puck({ handleClick: hue.handlePuckClick(printStatus) });
-};
-
-const main = () => {
+const main = async () => {
   const { PUCKS, HUE_USERNAME } = process.env;
   let run = true;
 
@@ -26,7 +19,11 @@ const main = () => {
     run = false;
   }
 
-  if (run) init().catch(log.err);
+  if (run) {
+    const hue = await initHueProm();
+
+    return new Puck({ handleClick: hue.handlePuckClick });
+  }
 };
 
-if (!module.parent) main();
+if (!module.parent) main().catch(log.err);
