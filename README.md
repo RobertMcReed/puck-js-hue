@@ -63,20 +63,18 @@ Packages: `bluetooth`, `bluez`, `libbluetooth-dev`, `libudev-dev`
       2. Write the light groups to a `GROUPS` array in the file `espruino/puck-advertise-hue.js`
          - This array will dictate the light groups that are controlled from the Puck
          - If you want to omit or reorder groups, edit the `GROUPS` array
-      3. Copy the code to your clipboard so you can paste it into the Espruino Web IDE
-5. Flash the code to your puck.js
-   1. Go to the [Espruino Web IDE](https://www.espruino.com/ide/)
-   2. Turn on the Puck and connect it to the IDE via WebBluetooth
-   3. Copy the code from `espruino/puck-advertise-hue.js` into the IDE
-   4. Send the code to the Puck
-   5. You can test it while connected to the IDE. Start pressing the Puck button and watch the console
-   6. Disconnect Puck from the Web IDE
-6. Discover your Puck with node: `node discoverPucks.js`
+      3. Copy the code to your clipboard in case you want to use the Espruino Web IDE
+5. Discover your Puck with node: `node discoverPucks.js`
    - On linux/RaspberryPi you must run as: `sudo node discoverPucks.js` unless you have granted node BLE privelages
    - This will find any Puck.js within range that is powered on and advertising
    - It will write the mac address of each as a comma separated list `PUCKS` to the `.env`
    - You can safely run this script again, it will add newly discovered pucks to the list
    - If your Puck is not discovered, ensure it is disconnected from all devices and that bluetooth on your computer is enabled
+6. Flash the code to your puck.js by running `node flashPuck.js`
+   - On linux/RaspberryPi you must run as: `sudo node flashPuck.js` unless you have granted node BLE privelages
+   - This will flash `espruino/puck-advertise-hue.js` to the Puck
+   - The code will be sent to the first puck listed in PUCKS in the .env
+   - Occasionally flashing will fail -- if this happens, simply run the script again
 7. You're ready to go! Run the main code with `node main.js`
    - On linux/RaspberryPi you must run as: `sudo node main.js` unless you have enabled BLE privelages for node
 
@@ -127,13 +125,13 @@ Puck responds with a pretty blue-green flash.
 
 Toggle light On / Off
 
-Puck responds with a classy yellow-green flash.
+Puck responds with a beautiful red-blue flash.
 
 ### Long Click (0.6s < clickDuration)
 
 Switch the light group the puck is currently bound to.
 
-Puck responds with a series of decadent blue-red flashes equal to the group number as ordered in the `GROUPS` array (one-indexed).
+Puck responds with a series of light blue-red-green flashes equal to the group number as ordered in the `GROUPS` array (one-indexed).
 
 ## Limitations
 
