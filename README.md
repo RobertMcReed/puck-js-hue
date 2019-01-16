@@ -55,32 +55,34 @@ Packages: `bluetooth`, `bluez`, `libbluetooth-dev`, `libudev-dev`
 3. Register your computer with your Hue Bridge
    1. Press the Link button on the top of your Bridge
    2. run `node registerDevice.js <optional app name>`
-   - This will register your device with the bridge, allowing you to programmatically access your lights
-   - It will also create a `.env` and add the auto-generated `HUE_USERNAME` to it
+      - This will register your device with the bridge, allowing you to programmatically access your lights
+      - It will also create a `.env` and add the auto-generated `HUE_USERNAME` to it
 4. Prepare the puck.js code: `node prepPuck.js`
    - This will:
       1. Connect to your bridge and gather your light groups
       2. Write the light groups to a `GROUPS` array in the file `espruino/puck-advertise-hue.js`
          - This array will dictate the light groups that are controlled from the Puck
          - If you want to omit or reorder groups, edit the `GROUPS` array
+      3. Copy the code to your clipboard so you can paste it into the Espruino Web IDE
 5. Flash the code to your puck.js
    1. Go to the [Espruino Web IDE](https://www.espruino.com/ide/)
    2. Turn on the Puck and connect it to the IDE via WebBluetooth
    3. Copy the code from `espruino/puck-advertise-hue.js` into the IDE
    4. Send the code to the Puck
-   5. You can test it while connected to the IDE. Start pressing the Puck button and watch the console.
+   5. You can test it while connected to the IDE. Start pressing the Puck button and watch the console
    6. Disconnect Puck from the Web IDE
 6. Discover your Puck with node: `node discoverPucks.js`
-   - On linux/RaspberryPi you must run as: `sudo node discoverPucks.js`
-   - This will find any Puck.js within range that is `poweredOn` and advertising
+   - On linux/RaspberryPi you must run as: `sudo node discoverPucks.js` unless you have granted node BLE privelages
+   - This will find any Puck.js within range that is powered on and advertising
    - It will write the mac address of each as a comma separated list `PUCKS` to the `.env`
    - You can safely run this script again, it will add newly discovered pucks to the list
    - If your Puck is not discovered, ensure it is disconnected from all devices and that bluetooth on your computer is enabled
 7. You're ready to go! Run the main code with `node main.js`
-   - On linux/RaspberryPi you must run as: `sudo node main.js`
+   - On linux/RaspberryPi you must run as: `sudo node main.js` unless you have enabled BLE privelages for node
 
 ### Extra Raspberry Pi Setup Steps
-1. Ensure you have node installed on your path: `which node`
+1. Ensure you have node installed on your path
+    - Run `which node`
     - If there is no output, install node as follows:
   
     ```
@@ -99,7 +101,19 @@ Packages: `bluetooth`, `bluez`, `libbluetooth-dev`, `libudev-dev`
     sudo apt-get install bluetooth bluez libbluetooth-dev libudev-dev
     ```
 
-3. Go back and follow the rest of the normal [setup instructions](#setup)
+3. On linux you must run all of the BLE scripts using `sudo`. If you would like to bypass this requirement you can grant node access to start and stop listening for BLE devices as follows:
+
+    ```
+    sudo setcap cap_net_raw+eip $(eval readlink -f `which node`)
+    ```
+
+    - If you don't have `setcap` installed, first install it with the following:
+
+        ```
+        sudo apt-get install libcap2-bin
+        ```
+
+4. Go back and follow the rest of the normal [setup instructions](#setup)
 
 ## Using the Puck
 
@@ -107,29 +121,19 @@ Packages: `bluetooth`, `bluez`, `libbluetooth-dev`, `libudev-dev`
 
 Toggle brightness between 25%, 50%, 75%, 100%
 
-Puck responds with a series of pretty green flashes equal to the light state (1, 2, 3, 4).
+Puck responds with a pretty blue-green flash.
 
 ### Medium Click (0.3s < clickDuration <= 0.6s)
 
 Toggle light On / Off
 
-Puck responds with a long green flash.
+Puck responds with a classy yellow-green flash.
 
-### Long Click (0.6s < clickDuration <= 0.9s)
+### Long Click (0.6s < clickDuration)
 
 Switch the light group the puck is currently bound to.
 
-Puck responds with a series of pretty blue flashes equal to the group number as ordered in the `GROUPS` array (one-indexed).
-
-### Longer Click (0.9s < clickDuration <= 1.5s)
-
-Puck reminds you what light group is selected.
-
-Puck responds with a series of aggressive red flashes equal to the group number as ordered in the `GROUPS` array (one-indexed).
-
-### Longest Click (duration > 2.0s)
-
-Rainbow party.
+Puck responds with a series of decadent blue-red flashes equal to the group number as ordered in the `GROUPS` array (one-indexed).
 
 ## Limitations
 

@@ -99,8 +99,8 @@ const handleWatch = (e) => {
   const len = e.time - e.lastTime;
 
   if (len > 0.6) handleChangeGroups(e);
-  else if (len > 0.3) handleChangeBrightness();
-  else handleToggleLights();
+  else if (len > 0.3) handleToggleLights();
+  else handleChangeBrightness();
 
   setAdvertisement();
 };
