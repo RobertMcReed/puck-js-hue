@@ -1,0 +1,21 @@
+{
+  "clickDuration": {
+    "short": 0.3,
+    "medium": 0.6
+  },
+  "modes": {
+    "changeBrightness": {
+      "colors": ["blue", "green"],
+      "clickType": "short"
+    },
+    "toggleOnOff": {
+      "colors": ["blue", "green", "red"],
+      "clickType": "medium"
+    },
+    "selectLights": {
+      "colors": ["blue", "red"],
+      "clickType": "long",
+      "delay": 10
+    }
+  }
+}
