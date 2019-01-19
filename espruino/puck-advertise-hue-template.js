@@ -89,7 +89,7 @@ const handleChangeLights = (e) => {
   let lightNum = state.light;
   let prefix = 'Lights set';
 
-  if (state.lastLightTime && (e.time - state.lastLightTime) < CHANGE_DELAY) {
+  if ((e.time - state.lastLightTime) < CHANGE_DELAY) {
     const lightData = getNextLight();
     lightNum = lightData.lightNum; // eslint-disable-line
     prefix = 'Switching';
@@ -128,6 +128,7 @@ const handleWatch = (e) => {
     setAdvertisement();
   }
 
+  if (!state.lastLightTime) state.lastLightTime = e.time;
   state.lastClick = e.time;
 };
 
