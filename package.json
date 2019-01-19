@@ -7,6 +7,7 @@
     "start": "node main.js",
     "setup": "node setup.js",
     "update": "node utility/prepPuck.js && node utility/flashPuck.js",
+    "prep": "node utility/prepPuck.js",
     "flash": "node utility/flashPuck.js",
     "register": "node utility/registerDevice.js",
     "discoverPuck": "node utility/discoverPucks.js",
