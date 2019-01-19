@@ -83,21 +83,8 @@ const setup = async () => {
   // flashPuck
   br();
   info('Attempting to send Espruino code to Puck...');
-  let success = false;
-
-  for (let i = 0; i < 10; i++) {
-    const code = exec('node flashPuck.js');
-
-    if (code) {
-      if (i < 10) {
-        err('Flash failed, trying again...');
-        await pause(5);
-      }
-    } else {
-      success = true;
-      break;
-    }
-  }
+  const code = exec('node flashPuck.js');
+  const success = !code;
 
   if (success) {
     br();
@@ -110,9 +97,15 @@ const setup = async () => {
     br();
     br();
     info('Time to test it out!');
-    info('Run "node main.js" to start the script that will listen for Puck clicks.');
+    info('From now on, run "node main.js" to start the script that will listen for Puck clicks.');
     info('This script must be running on a device within a reasonable proximity of your Puck for it to work.');
     info('Have fun!');
+    br();
+    br();
+    br();
+    info('main.js will start in 15 seconds unless you exit the script...');
+    await pause(15);
+    shell.exec('node main.js');
   } else {
     err('Code was not sent to your Puck, but everything else worked.');
     info('Ensure that your puck is nearby, powered on, and not connected to any devices.');
