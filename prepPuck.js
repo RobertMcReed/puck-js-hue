@@ -1,21 +1,120 @@
 require('dotenv').load();
 const fs = require('fs-extra');
 const { join } = require('path');
-const clipboard = require('clipboardy');
 const { log, concat } = require('./lib/util');
 const { initHueProm } = require('./lib/hue');
 
-const cleanGroup = group => ({
-  name: group.name,
-  key: group.id,
-});
+const stringifyLights = (lights) => {
+  const header = 'const LIGHTS = [';
+  const makeRow = (acc, { name, key, type }) => `${acc}\n  { type: '${type}', name: '${name}', key: ${key} },`;
+  const lightRows = lights.reduce(makeRow, '');
 
-const stringifyGroups = (groups) => {
-  const header = 'const GROUPS = [';
-  const makeRow = (acc, { name, key }) => `${acc}\n  { name: '${name}', key: ${key} },`;
-  const groupRows = groups.reduce(makeRow, '');
+  return concat(header, lightRows, '\n];\n');
+};
 
-  return concat(header, groupRows, '\n];\n');
+const readFile = async (path, json) => {
+  try {
+    const file = await (!json
+      ? fs.readFile(path, 'utf-8')
+      : fs.readJson(path)
+    );
+
+    return file;
+  } catch (e) {
+    return null;
+  }
+};
+
+const readFiles = async () => {
+  const templatePath = join(__dirname, 'espruino', 'puck-advertise-hue-template.js');
+  const defaultConfigPath = join(__dirname, 'espruino', 'config-default.json');
+  const userConfigPath = join(__dirname, 'config.json');
+
+  const files = await Promise.all([
+    readFile(templatePath),
+    readFile(defaultConfigPath, true),
+    readFile(userConfigPath, true),
+  ]);
+
+  return files;
+};
+
+const deepCopy = obj => JSON.parse(JSON.stringify(obj));
+
+const copyAttributes = (destination, source) => {
+  if (source) {
+    Object.keys(source).forEach((key) => {
+      destination[key] = source[key];
+    });
+  }
+};
+
+const mergeConfigs = (defaultConfig, userConfig) => {
+  const merged = deepCopy(defaultConfig);
+
+  if (userConfig) {
+    copyAttributes(merged.clickDuration, userConfig.clickDuration);
+
+    if (userConfig.modes) {
+      Object.keys(defaultConfig.modes).forEach((mode) => {
+        if (userConfig.modes[mode]) {
+          copyAttributes(merged.modes[mode], userConfig.modes[mode]);
+        }
+      });
+    }
+  }
+
+  return merged;
+};
+
+const getOrder = (mode) => {
+  let order = null;
+  const type = mode.clickType;
+
+  switch (type) {
+    case 'short':
+      order = 0;
+      break;
+    case 'medium':
+      order = 1;
+      break;
+    default:
+      order = 2;
+      break;
+  }
+
+  return order;
+};
+
+const formatSettings = (settings) => {
+  const {
+    clickDuration: {
+      short,
+      medium,
+    },
+    modes: {
+      changeBrightness,
+      toggleOnOff,
+      selectLights,
+    },
+  } = settings;
+
+  const handlers = [];
+  handlers[getOrder(changeBrightness)] = 'handleChangeBrightness';
+  handlers[getOrder(toggleOnOff)] = 'handleToggleLights';
+  handlers[getOrder(selectLights)] = 'handleChangeLights';
+
+  const lines = [
+    `const SHORT_MAX = ${short};`,
+    `const MEDIUM_MAX = ${medium};`,
+    `const CHANGE_DELAY = ${selectLights.delay};`,
+    `const BRIGHTNESS_COLORS = ${JSON.stringify(changeBrightness.colors).replace(/"/g, '\'')};`,
+    `const CHANGE_COLORS = ${JSON.stringify(selectLights.colors).replace(/"/g, '\'')};`,
+    `const TOGGLE_COLORS = ${JSON.stringify(toggleOnOff.colors).replace(/"/g, '\'')};`,
+    `const HANDLERS = ${JSON.stringify(handlers).replace(/"/g, '')};`,
+  ];
+
+  return `${lines.join('\n')}\n`;
 };
 
 const prepPuck = async () => {
@@ -24,25 +123,36 @@ const prepPuck = async () => {
     return;
   }
 
-  const filename = join(__dirname, 'espruino', 'puck-advertise-hue.js');
-  const demarcation = '// DO NOT ADD ANYTHING ABOVE THIS LINE';
-  const codeRaw = await fs.readFile(filename, 'utf-8');
+  const [codeRaw, defaultConfig, userConfig] = await readFiles();
 
-  const splitCode = codeRaw.split(demarcation);
+  const START = '// CONFIG BEGIN\n';
+  const STOP = '// CONFIG END\n';
+
+  const cleanedCode = codeRaw.replace(/ \/\/ eslint.*$/gm, '');
+  const splitCode = cleanedCode.split(STOP);
   const code = splitCode[1] || splitCode[0];
-  const hue = await initHueProm();
-  log.info('Fetching light groups...');
-  const groups = await hue.getGroups();
-  const cleanedGroups = groups.slice(1).map(cleanGroup);
-  const stringGroups = stringifyGroups(cleanedGroups);
-  const formattedCode = concat(stringGroups, demarcation, code);
-  log.info('Adding GROUPS array to espruino/puck-advertise-hue.js...');
 
+  if (!userConfig || !userConfig.lights) {
+    if (!userConfig) log.info('No config.json found. Using default config.');
+
+    const hue = await initHueProm();
+    log.info('Fetching light groups...');
+    const bulbs = await hue.getLightsAndGroups();
+    const { groups } = bulbs;
+    log.info('Adding light groups to your configuration...');
+    defaultConfig.lights = groups;
+  }
+
+  const settings = mergeConfigs(defaultConfig, userConfig);
+  const formattedSettings = formatSettings(settings);
+  const stringGroups = stringifyLights(settings.lights);
+  const eslint = '/* eslint-disable */\n';
+  const formattedCode = concat(eslint, START, formattedSettings, stringGroups, STOP, code);
+  log.info('Writing config settings to espruino/puck-advertise-hue.js...');
+
+  const filename = join(__dirname, 'espruino', 'puck-advertise-hue.js');
   await fs.writeFile(filename, formattedCode);
-  log.info('Copying Espruino code to your clipboard...');
-  const cleanedCode = formattedCode.replace(/ \/\/ eslint.*$/gm, '');
-  await clipboard.write(cleanedCode);
-  log.info('Success. Paste the code into the Espruino Web IDE and flash it to your Puck.js.');
+  log.info('Success!');
 };
 
-if (!module.parent) prepPuck();
+if (!module.parent) prepPuck().catch(console.log);

@@ -5,6 +5,7 @@
         "no-plusplus": "off",
         "global-require": "off",
         "consistent-return": "off",
+        "no-param-reassign": "off",
         "no-use-before-define": "off"
     }
 }
