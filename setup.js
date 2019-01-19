@@ -109,7 +109,7 @@ const setup = async () => {
   } else {
     err('Code was not sent to your Puck, but everything else worked.');
     info('Ensure that your puck is nearby, powered on, and not connected to any devices.');
-    info('Try flashing the code again by running "node flashPuck.js".');
+    info('Try flashing the code again by re-running this script.');
     info('It may take a few attempts for it to send successfully, but should eventually work.');
     info('If you can\'t send it successfully, try copying the code from espruino/puck-advertise-hue.js into the Espruino Web IDE and sending it manually.');
   }
