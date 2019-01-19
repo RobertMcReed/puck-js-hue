@@ -6,11 +6,18 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["Hue", "puck.js", "Espruino", "BLE", "Raspberry Pi", "Phillips"],
+  "keywords": [
+    "Hue",
+    "puck.js",
+    "Espruino",
+    "BLE",
+    "Raspberry Pi",
+    "Phillips"
+  ],
   "author": "Robert Reed",
   "license": "MIT",
   "dependencies": {
-    "clipboardy": "^1.2.3",
+    "auto-bind": "^2.0.0",
     "dotenv": "^6.2.0",
     "espruino": "^0.1.23",
     "fs-extra": "^7.0.1",
