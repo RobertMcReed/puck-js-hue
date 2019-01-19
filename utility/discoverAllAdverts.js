@@ -1,4 +1,4 @@
-const { checkBluetooth, log } = require('./util');
+const { checkBluetooth, log } = require('../lib/util');
 
 const onDiscovery = (peripheral) => {
   // peripheral.rssi                             - signal strength
@@ -16,7 +16,7 @@ const onDiscovery = (peripheral) => {
   );
 };
 
-const discoverAllPucks = () => {
+const discoverAllAdverts = () => {
   const noble = require('noble');
 
   noble.on('stateChange', (bluetoothState) => {
@@ -29,4 +29,4 @@ const discoverAllPucks = () => {
   noble.on('discover', onDiscovery);
 };
 
-if (!module.parent) discoverAllPucks();
+if (!module.parent) discoverAllAdverts();

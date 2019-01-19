@@ -1,6 +1,6 @@
 require('dotenv').load();
-const Puck = require('./lib/puck');
-const updateEnv = require('./lib/updateEnv');
+const Puck = require('../lib/puck');
+const updateEnv = require('../lib/updateEnv');
 
 const firstOnly = process.argv.includes('--first');
 const timeout = process.argv.indexOf('--timeout');

@@ -1,7 +1,7 @@
 require('dotenv').load();
-const { log } = require('./lib/util');
-const updateEnv = require('./lib/updateEnv');
-const { registerDevice: registerDeviceWithHue } = require('./lib/hue');
+const { log } = require('../lib/util');
+const updateEnv = require('../lib/updateEnv');
+const { registerDevice: registerDeviceWithHue } = require('../lib/hue');
 
 const catchError = ({ message }) => {
   log.err(message);

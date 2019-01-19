@@ -1,7 +1,7 @@
 require('dotenv').load();
 const fs = require('fs-extra');
-const { log } = require('./lib/util');
-const { initHueProm } = require('./lib/hue');
+const { log } = require('../lib/util');
+const { initHueProm } = require('../lib/hue');
 
 const discoverLights = async () => {
   if (!process.env.HUE_USERNAME) {

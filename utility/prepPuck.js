@@ -1,8 +1,8 @@
 require('dotenv').load();
 const fs = require('fs-extra');
 const { join } = require('path');
-const { log, concat } = require('./lib/util');
-const { initHueProm } = require('./lib/hue');
+const { log, concat } = require('../lib/util');
+const { initHueProm } = require('../lib/hue');
 
 const stringifyLights = (lights) => {
   const header = 'const LIGHTS = [';
@@ -26,9 +26,9 @@ const readFile = async (path, json) => {
 };
 
 const readFiles = async () => {
-  const templatePath = join(__dirname, 'espruino', 'puck-advertise-hue-template.js');
-  const defaultConfigPath = join(__dirname, 'espruino', 'config-default.json');
-  const userConfigPath = join(__dirname, 'config.json');
+  const templatePath = join(__dirname, '..', 'espruino', 'puck-advertise-hue-template.js');
+  const defaultConfigPath = join(__dirname, '..', 'espruino', 'config-default.json');
+  const userConfigPath = join(__dirname, '..', 'config.json');
 
   const files = await Promise.all([
     readFile(templatePath),
@@ -153,7 +153,7 @@ const prepPuck = async () => {
 
   if (process.argv.includes('--save')) {
     log.info('Writing your config to config.json...');
-    await fs.writeJson(`${__dirname}/config.json`, settings, { spaces: 2 });
+    await fs.writeJson(`${__dirname}/../config.json`, settings, { spaces: 2 });
   }
 
   const formattedSettings = formatSettings(settings);
@@ -162,7 +162,7 @@ const prepPuck = async () => {
   const formattedCode = concat(eslint, START, formattedSettings, stringGroups, STOP, code);
   log.info('Writing config settings to espruino/puck-advertise-hue.js...');
 
-  const filename = join(__dirname, 'espruino', 'puck-advertise-hue.js');
+  const filename = join(__dirname, '..', 'espruino', 'puck-advertise-hue.js');
   await fs.writeFile(filename, formattedCode);
   log.info('Success!');
 };

@@ -1,13 +1,13 @@
 const esp = require('espruino');
 const { join } = require('path');
-const { log } = require('./lib/util');
+const { log } = require('../lib/util');
 
 const flashPuck = () => {
   const { PUCKS } = process.env;
   const puck = PUCKS.split(',')[0];
 
   if (puck) {
-    const filename = join(__dirname, 'espruino', 'puck-advertise-hue.js');
+    const filename = join(__dirname, '..', 'espruino', 'puck-advertise-hue.js');
 
     const info = console.log.bind(null, '[INFO]');
     const err = console.log.bind(null, '[ERROR]');
@@ -35,7 +35,6 @@ const flashPuck = () => {
         info('Success!');
         process.exit(0);
       }
-
     });
   } else {
     log.err('No PUCKS in .env.');
