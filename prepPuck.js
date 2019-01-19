@@ -62,6 +62,8 @@ const mergeConfigs = (defaultConfig, userConfig) => {
         }
       });
     }
+
+    if (userConfig.lights) merged.lights = userConfig.lights;
   }
 
   return merged;
@@ -138,22 +140,20 @@ const prepPuck = async () => {
   const splitCode = cleanedCode.split(STOP);
   const code = splitCode[1] || splitCode[0];
 
-  if (!userConfig || !userConfig.lights) {
-    if (!userConfig) log.info('No config.json found. Using default config.');
+  const settings = mergeConfigs(defaultConfig, userConfig);
 
+  if (!userConfig || !userConfig.lights) {
     const hue = await initHueProm();
     log.info('Fetching light groups...');
     const bulbs = await hue.getLightsAndGroups();
     const { groups } = bulbs;
     log.info('Adding light groups to your configuration...');
-    defaultConfig.lights = groups;
+    settings.lights = groups;
   }
-
-  const settings = mergeConfigs(defaultConfig, userConfig);
 
   if (process.argv.includes('--save')) {
     log.info('Writing your config to config.json...');
-    await fs.writeJson(`${__dirname}/config.json`, settings);
+    await fs.writeJson(`${__dirname}/config.json`, settings, { spaces: 2 });
   }
 
   const formattedSettings = formatSettings(settings);
@@ -167,4 +167,10 @@ const prepPuck = async () => {
   log.info('Success!');
 };
 
-if (!module.parent) prepPuck().catch(() => process.exit(1));
+if (!module.parent) {
+  prepPuck()
+    .catch((e) => {
+      console.log(e);
+      process.exit(1);
+    });
+}
