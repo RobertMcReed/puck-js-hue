@@ -1,6 +1,6 @@
 {
   "clickDuration": {
-    "timeout": 120,
+    "timeout": 300,
     "short": 0.3,
     "medium": 0.6
   },
@@ -16,7 +16,7 @@
     "selectLights": {
       "colors": ["blue", "red"],
       "clickType": "long",
-      "delay": 10
+      "delay": 120
     }
   }
 }
