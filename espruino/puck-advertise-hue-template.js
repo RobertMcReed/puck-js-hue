@@ -3,6 +3,7 @@ const LIGHTS = [{ key: 1, type: 'light', name: 'default' }];
 const SHORT_MAX = 0.3;
 const MEDIUM_MAX = 0.6;
 const CHANGE_DELAY = 10;
+const TIMEOUT = 30;
 const BRIGHTNESS_COLORS = ['blue', 'green'];
 const CHANGE_COLORS = ['blue', 'red'];
 const TOGGLE_COLORS = ['blue', 'green', 'red'];
@@ -22,6 +23,7 @@ const state = {
   toggle: 0,
   brightness: 0,
   lastLightTime: null,
+  lastClick: null,
 };
 
 function info() {
@@ -64,10 +66,11 @@ const flashLightNum = (lightNum, colors) => {
 };
 
 const setAdvertisement = () => {
-  const key = LIGHTS[state.light].key; // eslint-disable-line
+  const light = LIGHTS[state.light];
+  const key = light.key; // eslint-disable-line
   const toggle = state.toggle; // eslint-disable-line
   const brightness = state.brightness; // eslint-disable-line
-  const type = state.type; // eslint-disable-line
+  const type = light.type; // eslint-disable-line
   const advert = `${type[0]}${key}-${toggle}-${brightness}`;
   info('Setting Advertisement:', advert);
   NRF.setAdvertising( // eslint-disable-line
@@ -76,13 +79,13 @@ const setAdvertisement = () => {
   );
 };
 
-function handleChangeBrightness() {
+const handleChangeBrightness = () => {
   pulseMany(getColors(BRIGHTNESS_COLORS), 400);
   info(`Adjusting brightness in ${LIGHTS[state.light].name}`);
   toggleBrightness();
-}
+};
 
-function handleChangeLights(e) {
+const handleChangeLights = (e) => {
   let lightNum = state.light;
   let prefix = 'Lights set';
 
@@ -95,23 +98,37 @@ function handleChangeLights(e) {
   info(`${prefix} to ${LIGHTS[state.light].name}`);
   state.lastLightTime = e.time;
   flashLightNum(lightNum, getColors(CHANGE_COLORS));
-}
+};
 
-function handleToggleLights() {
+const handleToggleLights = () => {
   pulseMany(getColors(TOGGLE_COLORS), 400); // eslint-disable-line
   info(`Toggling ${LIGHTS[state.light].name}`);
   toggleLights();
-}
+};
+
+const handlersMap = {
+  handleChangeBrightness: handleChangeBrightness, // eslint-disable-line
+  handleToggleLights: handleToggleLights, // eslint-disable-line
+  handleChangeLights: handleChangeLights // eslint-disable-line
+};
 
 const handleWatch = (e) => {
   const len = e.time - e.lastTime;
+  const clickTimeout = !state.lastClick || (e.time - state.lastClick > TIMEOUT);
 
-  let fnNum = 0;
-  if (len > MEDIUM_MAX) fnNum = 2;
-  else if (len > SHORT_MAX) fnNum = 1;
+  if (clickTimeout) {
+    info(`Lights set to ${LIGHTS[state.light].name}`);
+    flashLightNum(state.light, getColors(CHANGE_COLORS));
+  } else {
+    let fnNum = 0;
+    if (len > MEDIUM_MAX) fnNum = 2;
+    else if (len > SHORT_MAX) fnNum = 1;
 
-  HANDLERS[fnNum](e);
-  setAdvertisement();
+    handlersMap[HANDLERS[fnNum]](e);
+    setAdvertisement();
+  }
+
+  state.lastClick = e.time;
 };
 
 const init = () => {
