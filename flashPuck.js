@@ -30,9 +30,12 @@ const flashPuck = () => {
       if (error) {
         err('Failed to send code to puck.');
         info('This happens from time to time. Please run flashPuck.js again.');
-      } else info('Success!');
+        process.exit(1);
+      } else {
+        info('Success!');
+        process.exit(0);
+      }
 
-      process.exit();
     });
   } else {
     log.err('No PUCKS in .env.');

@@ -47,5 +47,5 @@ const registerDevice = async (description) => {
   return username;
 };
 
-if (!module.parent) registerDevice();
+if (!module.parent) registerDevice().catch(() => process.exit(1));
 else module.exports = registerDevice;
