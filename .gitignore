@@ -99,5 +99,5 @@ typings/
 
 light-*.json
 sandbox/*
-puck-advertise-hue.js
+espruino/puck-advertise-hue.js
 hue.json
