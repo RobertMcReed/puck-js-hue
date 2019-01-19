@@ -22,7 +22,8 @@
     "espruino": "^0.1.23",
     "fs-extra": "^7.0.1",
     "noble": "^1.9.1",
-    "node-hue-api": "^2.4.4"
+    "node-hue-api": "^2.4.4",
+    "shelljs": "^0.8.3"
   },
   "devDependencies": {
     "eslint": "^5.12.0",
