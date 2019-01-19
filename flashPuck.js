@@ -1,11 +1,9 @@
-require('dotenv').load();
 const esp = require('espruino');
 const { join } = require('path');
 const { log } = require('./lib/util');
 
-const { PUCKS } = process.env;
-
 const flashPuck = () => {
+  const { PUCKS } = process.env;
   const puck = PUCKS.split(',')[0];
 
   if (puck) {
@@ -30,8 +28,8 @@ const flashPuck = () => {
 
     esp.sendFile(puck, filename, () => {
       if (error) {
-        err('Failed to send code.');
-        info('This happens from time to time. Please try again.');
+        err('Failed to send code to puck.');
+        info('This happens from time to time. Please run flashPuck.js again.');
       } else info('Success!');
 
       process.exit();
@@ -42,4 +40,7 @@ const flashPuck = () => {
   }
 };
 
-if (!module.parent) flashPuck();
+if (!module.parent) {
+  require('dotenv').load();
+  flashPuck();
+} else module.exports = flashPuck;
