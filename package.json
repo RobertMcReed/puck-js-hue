@@ -4,7 +4,15 @@
   "description": "Control your Hue lights from a Puck.js",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node main.js",
+    "setup": "node setup.js",
+    "update": "node utility/prepPuck.js && node utility/flashPuck.js",
+    "flash": "node utility/flashPuck.js",
+    "register": "node utility/registerDevice.js",
+    "discoverPuck": "node utility/discoverPucks.js",
+    "discoverOnePuck": "node utility/discoverPucks.js --first",
+    "discoverLights": "node utility/discoverLights.js",
+    "listen": "node utility/discoverAllAdverts.js"
   },
   "keywords": [
     "Hue",
