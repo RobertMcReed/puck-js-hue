@@ -86,9 +86,14 @@ const getOrder = (mode) => {
   return order;
 };
 
+const stringifyArray = array => JSON.stringify(array)
+  .replace(/"/g, '\'')
+  .replace(/,/g, ', ');
+
 const formatSettings = (settings) => {
   const {
     clickDuration: {
+      timeout,
       short,
       medium,
     },
@@ -108,10 +113,11 @@ const formatSettings = (settings) => {
     `const SHORT_MAX = ${short};`,
     `const MEDIUM_MAX = ${medium};`,
     `const CHANGE_DELAY = ${selectLights.delay};`,
-    `const BRIGHTNESS_COLORS = ${JSON.stringify(changeBrightness.colors).replace(/"/g, '\'')};`,
-    `const CHANGE_COLORS = ${JSON.stringify(selectLights.colors).replace(/"/g, '\'')};`,
-    `const TOGGLE_COLORS = ${JSON.stringify(toggleOnOff.colors).replace(/"/g, '\'')};`,
-    `const HANDLERS = ${JSON.stringify(handlers).replace(/"/g, '')};`,
+    `const TIMEOUT = ${timeout};`,
+    `const BRIGHTNESS_COLORS = ${stringifyArray(changeBrightness.colors)};`,
+    `const CHANGE_COLORS = ${stringifyArray(selectLights.colors)};`,
+    `const TOGGLE_COLORS = ${stringifyArray(toggleOnOff.colors)};`,
+    `const HANDLERS = ${stringifyArray(handlers)};`,
   ];
 
   return `${lines.join('\n')}\n`;
