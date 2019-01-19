@@ -6,7 +6,10 @@ const { log: { br, info, err } } = require('./lib/util');
 const { PUCKS, HUE_USERNAME } = process.env;
 
 const exec = (command) => {
-  const { code } = shell.exec(command, { silent: true });
+  const res = shell.exec(command, { silent: true });
+  let { code } = res;
+
+  if (res.stdout.includes('TypeError')) code = 1;
 
   return code;
 };
