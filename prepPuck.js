@@ -150,6 +150,12 @@ const prepPuck = async () => {
   }
 
   const settings = mergeConfigs(defaultConfig, userConfig);
+
+  if (process.argv.includes('--save')) {
+    log.info('Writing your config to config.json...');
+    await fs.writeJson(`${__dirname}/config.json`, settings);
+  }
+
   const formattedSettings = formatSettings(settings);
   const stringGroups = stringifyLights(settings.lights);
   const eslint = '/* eslint-disable */\n';
@@ -161,4 +167,4 @@ const prepPuck = async () => {
   log.info('Success!');
 };
 
-if (!module.parent) prepPuck().catch(console.log);
+if (!module.parent) prepPuck().catch(() => process.exit(1));
