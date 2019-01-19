@@ -2,8 +2,8 @@
 const LIGHTS = [{ key: 1, type: 'light', name: 'default' }];
 const SHORT_MAX = 0.3;
 const MEDIUM_MAX = 0.6;
-const CHANGE_DELAY = 10;
-const TIMEOUT = 30;
+const CHANGE_DELAY = 120;
+const TIMEOUT = 300;
 const BRIGHTNESS_COLORS = ['blue', 'green'];
 const CHANGE_COLORS = ['blue', 'red'];
 const TOGGLE_COLORS = ['blue', 'green', 'red'];
@@ -89,7 +89,7 @@ const handleChangeLights = (e) => {
   let lightNum = state.light;
   let prefix = 'Lights set';
 
-  if ((e.time - state.lastLightTime) < CHANGE_DELAY) {
+  if (!CHANGE_DELAY || (e.time - state.lastLightTime) < CHANGE_DELAY) {
     const lightData = getNextLight();
     lightNum = lightData.lightNum; // eslint-disable-line
     prefix = 'Switching';
@@ -114,7 +114,7 @@ const handlersMap = {
 
 const handleWatch = (e) => {
   const len = e.time - e.lastTime;
-  const clickTimeout = !state.lastClick || (e.time - state.lastClick > TIMEOUT);
+  const clickTimeout = TIMEOUT && (!state.lastClick || (e.time - state.lastClick > TIMEOUT));
 
   if (clickTimeout) {
     info(`Lights set to ${LIGHTS[state.light].name}`);
